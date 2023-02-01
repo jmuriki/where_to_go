@@ -1,39 +1,34 @@
 from django.http import HttpResponse
 from django.template import loader
 
+from places.models import Place, Image
+
 
 def index(request):
     template = loader.get_template('index.html')
     context = {
         "geo_json": {
             "type": "FeatureCollection",
-            "features": [
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [37.62, 55.793676]
-                    },
-                    "properties": {
-                        "title": "«Легенды Москвы",
-                        "placeId": "moscow_legends",
-                        "detailsUrl": "/static/places/moscow_legends.json"
-                    }
-                },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [37.64, 55.753676]
-                    },
-                    "properties": {
-                        "title": "Крыши24.рф",
-                        "placeId": "roofs24",
-                        "detailsUrl": "/static/places/roofs24.json"
-                    }
-                }
-            ]
+            "features": [],
         }
     }
+    places = Place.objects.prefetch_related('images').all()
+    for place in places:
+        place_features = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    place.coordinates_lng,
+                    place.coordinates_lat,
+                ]
+            },
+            "properties": {
+                "title": place.title,
+                "placeId": place.placeId,
+                "detailsUrl": place.detailsUrl,
+            }
+        }
+        context["geo_json"]["features"].append(place_features)
     rendered_page = template.render(context, request)
     return HttpResponse(rendered_page)
