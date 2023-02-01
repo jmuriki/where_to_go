@@ -1,7 +1,16 @@
 from django.http import HttpResponse
 from django.template import loader
+from django.shortcuts import get_object_or_404
 
 from places.models import Place, Image
+
+
+def show_place(request, place_id):
+    place = get_object_or_404(Place, pk=place_id)
+    template = loader.get_template('place.html')
+    context = {"place": place}
+    rendered_page = template.render(context, request)
+    return HttpResponse(rendered_page)
 
 
 def index(request):
