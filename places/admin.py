@@ -11,5 +11,6 @@ class PlaceAdmin(admin.ModelAdmin):
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
         list_display = [
+        'id',
         'image',
     ]
