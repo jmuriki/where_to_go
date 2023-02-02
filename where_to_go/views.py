@@ -2,12 +2,13 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.urls import reverse
 
-from places.models import Place, Image
+from places.models import Place
 
 
 def compose_place_details(place):
-    images_urls = [img.image.url for img in place.images.all()\
-        .order_by("position")]
+    images_urls = [
+        img.image.url for img in place.images.all().order_by("position")
+    ]
     details = {
         "title": place.title,
         "imgs": images_urls,
