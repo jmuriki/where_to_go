@@ -5,8 +5,9 @@ from django.urls import reverse
 from places.models import Place, Image
 
 
-def compose_json_response(place):
-    images_urls = [img.image.url for img in place.images.all()]
+def compose_place_details(place):
+    images_urls = [img.image.url for img in place.images.all()\
+        .order_by("position")]
     details = {
         "title": place.title,
         "imgs": images_urls,
@@ -17,17 +18,17 @@ def compose_json_response(place):
             "lat": place.coordinates_lat,
         }
     }
+    return details
+
+
+def get_place_json(request, place_id):
+    place = get_object_or_404(Place, pk=place_id)
+    details = compose_place_details(place)
     return JsonResponse(
         details,
         safe=False,
         json_dumps_params={'ensure_ascii': False, 'indent': 2},
     )
-
-
-def show_place_json(request, place_id):
-    place = get_object_or_404(Place, pk=place_id)
-    details_json_response = compose_json_response(place)
-    return details_json_response
 
 
 def index(request):
