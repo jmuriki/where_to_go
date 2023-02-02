@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+from django.urls import reverse
 
 from places.models import Place, Image
 
@@ -23,7 +24,7 @@ def compose_json_response(place):
     )
 
 
-def show_place(request, place_id):
+def show_place_json(request, place_id):
     place = get_object_or_404(Place, pk=place_id)
     details_json_response = compose_json_response(place)
     return details_json_response
@@ -50,7 +51,7 @@ def index(request):
             "properties": {
                 "title": place.title,
                 "placeId": place.id,
-                "detailsUrl": place.detailsUrl,
+                "detailsUrl": reverse("place_json", args=[place.id]),
             }
         }
         places_geojson["geo_json"]["features"].append(place_features)
