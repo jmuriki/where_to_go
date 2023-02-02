@@ -1,11 +1,32 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
 
 from places.models import Place, Image
 
 
+def compose_json_response(place):
+    images_urls = [img.image.url for img in place.images.all()]
+    details = {
+        "title": place.title,
+        "imgs": images_urls,
+        "description_short": place.description_short,
+        "description_long": place.description_long,
+        "coordinates": {
+            "lng": place.coordinates_lng,
+            "lat": place.coordinates_lat,
+        }
+    }
+    return JsonResponse(
+        details,
+        safe=False,
+        json_dumps_params={'ensure_ascii': False, 'indent': 2},
+    )
+
+
 def show_place(request, place_id):
-    place = {"place": get_object_or_404(Place, pk=place_id)}
-    return render(request, "place.html", context=place)
+    place = get_object_or_404(Place, pk=place_id)
+    details_json_response = compose_json_response(place)
+    return details_json_response
 
 
 def index(request):
@@ -15,7 +36,7 @@ def index(request):
             "features": [],
         }
     }
-    places = Place.objects.prefetch_related('images').all()
+    places = Place.objects.all()
     for place in places:
         place_features = {
             "type": "Feature",
@@ -28,7 +49,7 @@ def index(request):
             },
             "properties": {
                 "title": place.title,
-                "placeId": place.placeId,
+                "placeId": place.id,
                 "detailsUrl": place.detailsUrl,
             }
         }
