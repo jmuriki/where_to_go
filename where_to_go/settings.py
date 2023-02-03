@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from environs import Env
+from django.core.management.utils import get_random_secret_key
+
+
+env = Env()
+env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_^+0sne!z*5!p63-mud*p0#s^*y4f02n7zv!=aj%82auz6yq2s'
+SECRET_KEY = env.str('SECRET_KEY', default=get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 
 # Application definition
@@ -54,14 +61,18 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'where_to_go.urls'
 
-STATICFILES_DIRS = [
-    Path(f'{BASE_DIR}/static'),
-]
+STATICFILES_DIRS = env.list(
+    'STATICFILES_DIRS',
+    default=[Path(f'{BASE_DIR}/static')],
+)
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [Path(f'{BASE_DIR}/templates')],
+        'DIRS': env.list(
+            'TEMPLATES_DIRS',
+            default=[Path(f'{BASE_DIR}/templates')],
+        ),
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,8 +93,11 @@ WSGI_APPLICATION = 'where_to_go.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': env.str(
+            'DATABASE_ENGINE',
+            default='django.db.backends.sqlite3',
+        ),
+        'NAME': BASE_DIR / env.str('DATEBASE_NAME', default='db.sqlite3'),
     }
 }
 
@@ -124,13 +138,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_ROOT = env.str('STATIC_ROOT', default='')
+
+STATIC_URL = env.str('STATIC_URL', default='/static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-MEDIA_ROOT = Path(f'{BASE_DIR}/media')
+MEDIA_ROOT = env.path('MEDIA_ROOT', default=Path(f'{BASE_DIR}/media'))
 
-MEDIA_URL = '/media/'
+MEDIA_URL = env.str('MEDIA_URL', default='/media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
