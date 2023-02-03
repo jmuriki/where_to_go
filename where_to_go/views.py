@@ -7,7 +7,7 @@ from places.models import Place
 
 def compose_place_details(place):
     images_urls = [
-        img.image.url for img in place.images.all().order_by("position")
+        img.image.url for img in place.images.all()
     ]
     details = {
         "title": place.title,
