@@ -138,6 +138,5 @@ dmypy.json
 cython_debug/
 
 # This project
-migrations/
 media/
 .DS_Store
