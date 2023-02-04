@@ -63,7 +63,7 @@ ROOT_URLCONF = 'where_to_go.urls'
 
 STATICFILES_DIRS = env.list(
     'STATICFILES_DIRS',
-    default=[Path(f'{BASE_DIR}/static')],
+    default=[Path(BASE_DIR, 'static')],
 )
 
 TEMPLATES = [
@@ -71,7 +71,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': env.list(
             'TEMPLATES_DIRS',
-            default=[Path(f'{BASE_DIR}/templates')],
+            default=[Path(BASE_DIR, 'templates')],
         ),
         'APP_DIRS': True,
         'OPTIONS': {
@@ -145,7 +145,7 @@ STATIC_URL = env.str('STATIC_URL', default='/static/')
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-MEDIA_ROOT = env.path('MEDIA_ROOT', default=Path(f'{BASE_DIR}/media'))
+MEDIA_ROOT = env.path('MEDIA_ROOT', default=Path(BASE_DIR, 'media'))
 
 MEDIA_URL = env.str('MEDIA_URL', default='/media/')
 
