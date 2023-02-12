@@ -17,12 +17,9 @@ class ImageInline(SortableTabularInline):
     readonly_fields = ['show_image_preview']
 
     def show_image_preview(self, object):
-        ratio = object.image.width / 200
         return format_html(
-            '<img src="{url}" width="{width}" height="{height}" />',
+            '<img src="{url}" height="200px"/>',
             url=object.image.url,
-            width=object.image.width / ratio,
-            height=object.image.height / ratio,
         )
 
 
@@ -44,10 +41,7 @@ class ImageAdmin(admin.ModelAdmin):
     readonly_fields = ['show_image_preview']
 
     def show_image_preview(self, object):
-        ratio = object.image.width / 200
         return format_html(
-            '<img src="{url}" width="{width}" height="{height}" />',
+            '<img src="{url}" height="200px"/>',
             url=object.image.url,
-            width=object.image.width / ratio,
-            height=object.image.height / ratio,
         )
