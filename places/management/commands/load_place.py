@@ -71,10 +71,10 @@ def load_places(json_folder):
         place, _ = Place.objects.get_or_create(
             title=place_json['title'],
             defaults={
-                "description_short": place_json['description_short'],
-                "description_long": place_json['description_long'],
-                "coordinates_lng": place_json['coordinates']['lng'],
-                "coordinates_lat": place_json['coordinates']['lat'],
+                "short_description": place_json['description_short'],
+                "long_description": place_json['description_long'],
+                "lng": place_json['coordinates']['lng'],
+                "lat": place_json['coordinates']['lat'],
             },
         )
         for img_name in imgs_names:
