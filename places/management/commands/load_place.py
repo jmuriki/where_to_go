@@ -35,9 +35,9 @@ def get_filename_from_url(url):
     return filename
 
 
-def check_for_existence(img_name, imgs_paths):
-    for img_path in imgs_paths:
-        if img_name in os.path.split(img_path)[-1]:
+def file_exists(file_name, files_paths):
+    for file_path in files_paths:
+        if file_name in os.path.split(file_path)[-1]:
             return True
     return False
 
@@ -53,7 +53,7 @@ def fetch_images(place_json, imgs_paths):
     imgs_names = []
     for img_url in place_json['imgs']:
         img_name = get_filename_from_url(img_url)
-        if not imgs_paths or not check_for_existence(img_name, imgs_paths):
+        if not imgs_paths or not file_exists(img_name, imgs_paths):
             img_path = f'{MEDIA_ROOT}/{img_name}'
             save_content(img_url, img_path)
         imgs_names.append(img_name)
