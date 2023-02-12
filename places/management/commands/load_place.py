@@ -73,14 +73,13 @@ def load_places(json_folder):
             place_json,
             imgs_paths,
         )
-        Place.objects.get_or_create(
+        place, _ = Place.objects.get_or_create(
             title=place_json['title'],
             description_short=place_json['description_short'],
             description_long=place_json['description_long'],
             coordinates_lng=place_json['coordinates']['lng'],
             coordinates_lat=place_json['coordinates']['lat'],
         )
-        place = Place.objects.get(title=place_json['title'])
         for img_name in place_json['imgs_names']:
             Image.objects.get_or_create(place=place, image=img_name)
 
