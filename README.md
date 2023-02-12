@@ -34,7 +34,7 @@ pip3 install -r requirements.txt
 
 SECRET_KEY=вместо этого текста вставьте ключ; по умолчанию - get_random_secret_key()
 
-DEBUG=вставьте значение True или False, в зависимости от того, требуется ли вам режим отладки Django; по умолчанию - True
+DEBUG=вставьте значение True или False, в зависимости от того, требуется ли вам режим отладки Django; по умолчанию - False
 
 ALLOWED_HOSTS=по умолчанию - []
 
