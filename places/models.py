@@ -32,8 +32,8 @@ class Image(models.Model):
     position = models.PositiveIntegerField(
         verbose_name='Позиция',
         default=0,
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
         db_index=True,
     )
 
