@@ -23,11 +23,6 @@ def get_paths(folder):
     return paths
 
 
-def check_for_system_files(path):
-    system_files_extentions = ['.DS_Store']
-    return any(extention in path for extention in system_files_extentions)
-
-
 def get_filename_from_url(url):
     url_part = urlparse(url).path
     unquoted_url_part = unquote(url_part)
@@ -65,7 +60,7 @@ def load_places(json_folder):
     imgs_paths = get_paths(MEDIA_ROOT)
     places_jsons = []
     for path in json_files_paths:
-        if not check_for_system_files(path):
+        if ".json" in os.path.splitext(path):
             with open(Path(path), 'r') as json_file:
                 places_jsons.append(json.load(json_file))
     for place_json in places_jsons:
