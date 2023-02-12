@@ -69,7 +69,7 @@ def load_places(json_folder):
             with open(Path(path), 'r') as json_file:
                 places_jsons.append(json.load(json_file))
     for place_json in places_jsons:
-        place_json['imgs_names'] = fetch_images(
+        imgs_names = fetch_images(
             place_json,
             imgs_paths,
         )
@@ -82,7 +82,7 @@ def load_places(json_folder):
                 "coordinates_lat": place_json['coordinates']['lat'],
             },
         )
-        for img_name in place_json['imgs_names']:
+        for img_name in imgs_names:
             Image.objects.get_or_create(place=place, image=img_name)
 
 
