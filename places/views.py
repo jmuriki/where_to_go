@@ -23,7 +23,7 @@ def compose_place_details(place):
 
 
 def get_place_json(request, place_id):
-    place = get_object_or_404(Place, pk=place_id)
+    place = get_object_or_404(Place, pk=place_id).prefetch_related('images')
     details = compose_place_details(place)
     return JsonResponse(
         details,
