@@ -1,26 +1,14 @@
 import os
 import json
-import shutil
 import requests
+
 from pathlib import Path
-from urllib.parse import urlparse
 from urllib.parse import unquote
+from urllib.parse import urlparse
 
-from django.core.management.base import BaseCommand
 from places.models import Place, Image
-
-
-BASE_DIR = Path(__file__).absolute().parent.parent.parent.parent
-MEDIA_ROOT = Path(f'{BASE_DIR}/media')
-
-
-def get_paths(folder):
-    paths = []
-    for root, _, filenames in os.walk(Path(folder)):
-        for name in filenames:
-            path = os.path.join(root, name)
-            paths.append(path)
-    return paths
+from django.core.files.base import ContentFile
+from django.core.management.base import BaseCommand
 
 
 def get_filename_from_url(url):
@@ -30,44 +18,16 @@ def get_filename_from_url(url):
     return filename
 
 
-def file_exists(file_name, files_paths):
-    for file_path in files_paths:
-        if file_name in os.path.split(file_path)[-1]:
-            return True
-    return False
-
-
-def save_content(url, path):
-    response = requests.get(url)
-    response.raise_for_status()
-    with open(Path(path), 'wb') as file:
-        file.write(response.content)
-
-
-def fetch_images(place_json, imgs_paths):
-    imgs_names = []
-    for img_url in place_json['imgs']:
-        img_name = get_filename_from_url(img_url)
-        if not imgs_paths or not file_exists(img_name, imgs_paths):
-            img_path = f'{MEDIA_ROOT}/{img_name}'
-            save_content(img_url, img_path)
-        imgs_names.append(img_name)
-    return imgs_names
-
-
-def load_places(json_folder):
-    json_files_paths = get_paths(json_folder)
-    imgs_paths = get_paths(MEDIA_ROOT)
+def load_places(folder):
+    json_files_paths = [
+        os.path.join(folder, filename) for filename in os.listdir(folder)
+        if filename.endswith(".json")
+    ]
     places_jsons = []
     for path in json_files_paths:
-        if ".json" in os.path.splitext(path):
-            with open(Path(path), 'r') as json_file:
-                places_jsons.append(json.load(json_file))
+        with open(Path(path), 'r') as json_file:
+            places_jsons.append(json.load(json_file))
     for place_json in places_jsons:
-        imgs_names = fetch_images(
-            place_json,
-            imgs_paths,
-        )
         place, _ = Place.objects.get_or_create(
             title=place_json['title'],
             defaults={
@@ -77,8 +37,13 @@ def load_places(json_folder):
                 "lat": place_json['coordinates']['lat'],
             },
         )
-        for img_name in imgs_names:
-            Image.objects.get_or_create(place=place, image=img_name)
+        for img_url in place_json['imgs']:
+            response = requests.get(img_url)
+            response.raise_for_status()
+            content = ContentFile(response.content)
+            img_name = get_filename_from_url(img_url)
+            image_object = Image.objects.create(place=place)
+            image_object.image.save(name=img_name, content=content, save=True)
 
 
 class Command(BaseCommand):
@@ -89,18 +54,8 @@ class Command(BaseCommand):
             '--json_folder',
             default=False,
         )
-        parser.add_argument(
-            '-i',
-            '--images_folder',
-            default=False,
-        )
 
     def handle(self, *args, **options):
-        Path(MEDIA_ROOT).mkdir(parents=True, exist_ok=True)
-        if options['images_folder']:
-            images_paths = get_paths(options['images_folder'])
-            for image in images_paths:
-                shutil.copy(image, MEDIA_ROOT)
         if options['json_folder']:
             load_places(options['json_folder'])
         else:
