@@ -48,15 +48,14 @@ def load_places(folder):
 
 class Command(BaseCommand):
 
+    help = 'Add path to json files folder & images folder'
+
     def add_arguments(self, parser):
         parser.add_argument(
             '-j',
             '--json_folder',
-            default=False,
+            required=True,
         )
 
     def handle(self, *args, **options):
-        if options['json_folder']:
-            load_places(options['json_folder'])
-        else:
-            print('Add path to json files folder & images folder or use -h')
+        load_places(options['json_folder'])
